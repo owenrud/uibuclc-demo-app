@@ -1,4 +1,5 @@
 "use client";
+import { ScoreData } from "@/app/api/english-scores/data"; // your in-memory DB types
 
 import React, { useEffect, useMemo, useState } from "react";
 import { Bar } from "react-chartjs-2";
@@ -13,154 +14,12 @@ import {
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-type TestData = {
-  name: string;
-
-  // NEW SCORE STRUCTURE
-  structureScore: number;
-  listeningScore: number;
-  readingScore: number;
-  totalScore: number;
-
-  program: string;
-  year: number;
-  type: "Official" | "Prediction";
-  englishType: "TOEFL" | "TOEIC" | "IELTS";
-  passed: boolean;
-};
-
-
-// Dummy data (consistent scoring per englishType)
-const dummyData = [
-  // -------------------------
-  //        TOEFL (20)
-  // -------------------------
-  ...Array.from({ length: 20 }, (_, i) => {
-    const structure = Math.floor(Math.random() * 30) + 10;
-    const listening = Math.floor(Math.random() * 30) + 10;
-    const reading = Math.floor(Math.random() * 30) + 10;
-    const total = (structure + listening + reading) *10;
-
-    return {
-      name: `TOEFL User ${i + 1}`,
-      program: [
-  "Teknik Sipil",
-  "Arsitektur",
-  "Teknik Elektro",
-  "Sistem Informasi",
-  "Teknologi Informasi",
-  "Manajemen",
-  "Akuntansi",
-  "Pariwisata",
-  "Ilmu Hukum",
-  "Pendidikan Bahasa Inggris",
-  "Magister Manajemen",
-  "Magister Hukum"
-][i % 12],
-
-      year: 2023 + (i % 2),
-      type: "Official",
-      englishType: "TOEFL",
-      structureScore: structure,
-      listeningScore: listening,
-      readingScore: reading,
-      totalScore: total,
-      passed: total >= 450
-    };
-  }),
-
-  // -------------------------
-  //        TOEIC (20)
-  // -------------------------
-  ...Array.from({ length: 20 }, (_, i) => {
-    const listening = Math.floor(Math.random() * 450) + 50;
-    const reading = Math.floor(Math.random() * 450) + 50;
-    const structure = Math.floor(Math.random() * 100) + 10;
-    const total = listening + reading;
-
-    return {
-      name: `TOEIC User ${i + 1}`,
-      program: [
-  "Teknik Sipil",
-  "Arsitektur",
-  "Teknik Elektro",
-  "Sistem Informasi",
-  "Teknologi Informasi",
-  "Manajemen",
-  "Akuntansi",
-  "Pariwisata",
-  "Ilmu Hukum",
-  "Pendidikan Bahasa Inggris",
-  "Magister Manajemen",
-  "Magister Hukum"
-][i % 12],
-
-      year: 2023 + (i % 2),
-      type: "Official",
-      englishType: "TOEIC",
-      structureScore: structure,
-      listeningScore: listening,
-      readingScore: reading,
-      totalScore: total,
-      passed: total >= 600
-    };
-  }),
-
-  // -------------------------
-  //        IELTS (20)
-  // -------------------------
-  ...Array.from({ length: 20 }, (_, i) => {
-    const structure = Number((Math.random() * 3 + 4).toFixed(1)); // 4.0 - 7.0
-    const listening = Number((Math.random() * 3 + 4).toFixed(1));
-    const reading = Number((Math.random() * 3 + 4).toFixed(1));
-
-    const total = calculateIELTSBand(listening, reading, structure);
-
-    return {
-      name: `IELTS User ${i + 1}`,
-      program: [
-  "Teknik Sipil",
-  "Arsitektur",
-  "Teknik Elektro",
-  "Sistem Informasi",
-  "Teknologi Informasi",
-  "Manajemen",
-  "Akuntansi",
-  "Pariwisata",
-  "Ilmu Hukum",
-  "Pendidikan Bahasa Inggris",
-  "Magister Manajemen",
-  "Magister Hukum"
-][i % 12],
-
-      year: 2023 + (i % 2),
-      type: "Official",
-      englishType: "IELTS",
-      structureScore: structure,
-      listeningScore: listening,
-      readingScore: reading,
-      totalScore: total,
-      passed: total >= 6.0
-    };
-  })
-];
-
-
 
 const scoreOptions: Record<string, number[]> = {
   TOEFL: [400, 450, 500, 550, 600, 650, 700],
   TOEIC: [300, 400, 500, 600, 700, 800, 900],
   IELTS: [4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0],
 };
-function calculateIELTSBand(listening: number, reading: number, structure: number) {
-  // estimate speaking score because you don't have the 4th component
-  const speaking = (listening + reading + structure) / 3;
-
-  // compute IELTS band
-  const average = (listening + reading + structure + speaking) / 4;
-
-  return Math.round(average * 2) / 2; 
-}
 
 export default function Page() {
   const [program, setProgram] = useState<string>("All");
@@ -169,30 +28,39 @@ export default function Page() {
   const [testType, setTestType] = useState<string>("All");
   const [englishType, setEnglishType] = useState<string>("All");
 
-  // Reset minScore when englishType changes or auto-fix if current minScore not valid
+  const [scores, setScores] = useState<ScoreData[]>([]); // replace dummyData
+
+  // Fetch data from API on mount
+  useEffect(() => {
+    const fetchScores = async () => {
+      const res = await fetch("/api/english-scores");
+      const data = await res.json();
+      setScores(data);
+    };
+
+    fetchScores();
+  }, []);
+
+  // Reset minScore when englishType changes
   useEffect(() => {
     if (englishType === "All") {
       setMinScore(0);
     } else {
       const opts = scoreOptions[englishType];
-      if (!opts.includes(minScore)) {
-        setMinScore(0);
-      }
+      if (!opts.includes(minScore)) setMinScore(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [englishType]);
 
   // Filtered dataset based on current filters
   const filteredData = useMemo(() => {
-    return dummyData.filter(item =>
+    return scores.filter(item =>
       (program === "All" || item.program === program) &&
       (year === "All" || item.year.toString() === year) &&
       (englishType === "All" || item.englishType === englishType) &&
       (testType === "All" || item.type === testType) &&
-      // numeric comparison: works because IELTS scores are decimals and TOEFL/TOEIC are larger numbers
       (minScore === 0 ? true : item.totalScore >= minScore)
     );
-  }, [program, year, minScore, testType, englishType]);
+  }, [scores, program, year, minScore, testType, englishType]);
 
   const passedCount = filteredData.filter(d => d.passed).length;
   const notPassedCount = filteredData.filter(d => !d.passed).length;
@@ -251,6 +119,8 @@ export default function Page() {
               <option value="All">All</option>
               <option value="2023">2023</option>
               <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
             </select>
           </div>
 
