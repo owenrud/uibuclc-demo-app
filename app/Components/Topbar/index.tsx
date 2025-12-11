@@ -1,15 +1,7 @@
 "use client"
-
+import { useState } from "react";
 import { UserCircleIcon } from "@phosphor-icons/react";
-import {
-  Breadcrumb,
-  BreadcrumbEllipsis,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
+
 import { usePathname } from "next/navigation";
 
 function formatTitle(path: string): string {
@@ -24,6 +16,9 @@ function formatTitle(path: string): string {
 }
 
 const TopBar = () => {
+    const [isOpen, setIsOpen] = useState(false);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
 const pathname = usePathname();
     const title = formatTitle(pathname);
     return(
@@ -33,8 +28,23 @@ const pathname = usePathname();
                 <p className="text-white font-semibold text-lg">Home {">"} {title}</p>
                 <div className="flex flex-row justify-center space-x-4 items-center text-white">
                 <p className="text-xl">welcome,user!</p>
-                <UserCircleIcon size={48}/>
+                  {/* Avatar */}
+        <UserCircleIcon
+          size={48}
+          className="cursor-pointer"
+          onClick={toggleDropdown}
+        />
 
+        {/* Dropdown */}
+        {isOpen && (
+          <div className="absolute right-10 mt-48 w-32 bg-white text-black rounded-lg shadow-lg z-10">
+            <ul>
+              <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Profile</li>
+              <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Settings</li>
+              <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Logout</li>
+            </ul>
+          </div>
+        )}
                 </div>
             </div>
         </div>
