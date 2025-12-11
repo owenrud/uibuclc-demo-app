@@ -27,7 +27,19 @@ const Page = () => {
         tipeTest: "Prediction",
         jenisTest: "TOEIC",
     });
-
+const handleReset = () => {
+    setFormData({
+        nama: "",
+        npm: "",
+        keterangan: "",
+        tanggal: "",
+        listening: 0,
+        structure: 0,
+        reading: 0,
+        tipeTest: "Prediction",
+        jenisTest: "TOEIC",
+    });
+};
     // Properly typed handleChange for inputs and selects
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -111,7 +123,9 @@ const Page = () => {
 
                     {/* BUTTONS */}
                     <div className="flex justify-end space-x-4 mt-10 md:col-span-2">
-                        <button type="reset" className="px-5 py-2.5 rounded-xl border">Cancel</button>
+                        <button type="button" onClick={handleReset} className="px-5 py-2.5 rounded-xl border">
+  Cancel
+</button>
                         <button type="submit" className="px-5 py-2.5 rounded-xl bg-blue-600 text-white">Save</button>
                     </div>
                 </form>
