@@ -26,8 +26,8 @@ const NavbarComponent = () => {
 
     return (
         <div 
-            className={`bg-gray-100 p-2 h-screen transition-all duration-300 
-            ${collapsed ? "w-[80px]" : "w-[220px]"}`}
+            className={`bg-gray-100 p-2 h-screen transition-all duration-150 
+            ${collapsed ? "w-[85px]" : "w-[220px]"}`}
             
             onMouseEnter={() => setCollapsed(false)}
             onMouseLeave={() => setCollapsed(true)}
@@ -58,13 +58,13 @@ const NavbarComponent = () => {
                             `}
                         >
                             {/* FIXED ICON SIZE */}
-                            <div className="min-w-[40px] flex justify-center">
+                            <div className="min-w-[40px] flex justify-center items-center">
                                 {item.icon}
                             </div>
 
                             {/* Label fades out */}
                             <span
-                                className={`transition-all duration-300 whitespace-nowrap
+                                className={`transition-all duration-150 whitespace-nowrap
                                 ${collapsed ? "opacity-0 w-0 overflow-hidden" : "opacity-100"}`}
                             >
                                 {item.label}

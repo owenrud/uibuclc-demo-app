@@ -15,7 +15,13 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 type TestData = {
   name: string;
-  score: number; // numeric for TOEFL/TOEIC, decimal band for IELTS (e.g. 6.5)
+
+  // NEW SCORE STRUCTURE
+  structureScore: number;
+  listeningScore: number;
+  readingScore: number;
+  totalScore: number;
+
   program: string;
   year: number;
   type: "Official" | "Prediction";
@@ -23,35 +29,138 @@ type TestData = {
   passed: boolean;
 };
 
+
 // Dummy data (consistent scoring per englishType)
-const dummyData: TestData[] = [
-  { name: "User 1", score: 450, program: "Informatics", year: 2023, type: "Official",  englishType: "TOEFL", passed: false },
-  { name: "User 2", score: 520, program: "Management", year: 2024, type: "Prediction", englishType: "TOEIC", passed: true },
-  { name: "User 3", score: 6.0, program: "Economics", year: 2023, type: "Official",  englishType: "IELTS", passed: true },
-  { name: "User 4", score: 480, program: "Informatics", year: 2024, type: "Prediction", englishType: "TOEFL", passed: false },
-  { name: "User 5", score: 700, program: "Informatics", year: 2023, type: "Official",  englishType: "TOEIC", passed: true },
-  { name: "User 6", score: 6.5, program: "Economics", year: 2024, type: "Prediction", englishType: "IELTS", passed: true },
-  { name: "User 7", score: 620, program: "Management", year: 2023, type: "Official",  englishType: "TOEFL", passed: true },
-  { name: "User 8", score: 5.5, program: "Informatics", year: 2024, type: "Official",  englishType: "IELTS", passed: false },
-  { name: "User 9", score: 570, program: "Management", year: 2023, type: "Prediction", englishType: "TOEIC", passed: true },
-  { name: "User 10", score: 680, program: "Economics", year: 2024, type: "Official",  englishType: "TOEFL", passed: true },
-  { name: "User 11", score: 500, program: "Informatics", year: 2023, type: "Prediction", englishType: "TOEIC", passed: false },
-  { name: "User 12", score: 7.0, program: "Management", year: 2024, type: "Official",  englishType: "IELTS", passed: true },
-  { name: "User 13", score: 590, program: "Economics", year: 2023, type: "Prediction", englishType: "TOEFL", passed: false },
-  { name: "User 14", score: 7.5, program: "Informatics", year: 2024, type: "Official",  englishType: "IELTS", passed: true },
-  { name: "User 15", score: 480, program: "Management", year: 2023, type: "Prediction", englishType: "TOEIC", passed: false },
-  { name: "User 16", score: 6.0, program: "Economics", year: 2024, type: "Official",  englishType: "IELTS", passed: true },
-  { name: "User 17", score: 610, program: "Informatics", year: 2023, type: "Prediction", englishType: "TOEFL", passed: true },
-  { name: "User 18", score: 530, program: "Management", year: 2024, type: "Official",  englishType: "TOEIC", passed: true },
-  { name: "User 19", score: 690, program: "Economics", year: 2023, type: "Prediction", englishType: "TOEIC", passed: true },
-  { name: "User 20", score: 8.0, program: "Informatics", year: 2024, type: "Official",  englishType: "IELTS", passed: true },
+const dummyData = [
+  // -------------------------
+  //        TOEFL (20)
+  // -------------------------
+  ...Array.from({ length: 20 }, (_, i) => {
+    const structure = Math.floor(Math.random() * 30) + 10;
+    const listening = Math.floor(Math.random() * 30) + 10;
+    const reading = Math.floor(Math.random() * 30) + 10;
+    const total = (structure + listening + reading) *10;
+
+    return {
+      name: `TOEFL User ${i + 1}`,
+      program: [
+  "Teknik Sipil",
+  "Arsitektur",
+  "Teknik Elektro",
+  "Sistem Informasi",
+  "Teknologi Informasi",
+  "Manajemen",
+  "Akuntansi",
+  "Pariwisata",
+  "Ilmu Hukum",
+  "Pendidikan Bahasa Inggris",
+  "Magister Manajemen",
+  "Magister Hukum"
+][i % 12],
+
+      year: 2023 + (i % 2),
+      type: "Official",
+      englishType: "TOEFL",
+      structureScore: structure,
+      listeningScore: listening,
+      readingScore: reading,
+      totalScore: total,
+      passed: total >= 450
+    };
+  }),
+
+  // -------------------------
+  //        TOEIC (20)
+  // -------------------------
+  ...Array.from({ length: 20 }, (_, i) => {
+    const listening = Math.floor(Math.random() * 450) + 50;
+    const reading = Math.floor(Math.random() * 450) + 50;
+    const structure = Math.floor(Math.random() * 100) + 10;
+    const total = listening + reading;
+
+    return {
+      name: `TOEIC User ${i + 1}`,
+      program: [
+  "Teknik Sipil",
+  "Arsitektur",
+  "Teknik Elektro",
+  "Sistem Informasi",
+  "Teknologi Informasi",
+  "Manajemen",
+  "Akuntansi",
+  "Pariwisata",
+  "Ilmu Hukum",
+  "Pendidikan Bahasa Inggris",
+  "Magister Manajemen",
+  "Magister Hukum"
+][i % 12],
+
+      year: 2023 + (i % 2),
+      type: "Official",
+      englishType: "TOEIC",
+      structureScore: structure,
+      listeningScore: listening,
+      readingScore: reading,
+      totalScore: total,
+      passed: total >= 600
+    };
+  }),
+
+  // -------------------------
+  //        IELTS (20)
+  // -------------------------
+  ...Array.from({ length: 20 }, (_, i) => {
+    const structure = Number((Math.random() * 3 + 4).toFixed(1)); // 4.0 - 7.0
+    const listening = Number((Math.random() * 3 + 4).toFixed(1));
+    const reading = Number((Math.random() * 3 + 4).toFixed(1));
+
+    const total = calculateIELTSBand(listening, reading, structure);
+
+    return {
+      name: `IELTS User ${i + 1}`,
+      program: [
+  "Teknik Sipil",
+  "Arsitektur",
+  "Teknik Elektro",
+  "Sistem Informasi",
+  "Teknologi Informasi",
+  "Manajemen",
+  "Akuntansi",
+  "Pariwisata",
+  "Ilmu Hukum",
+  "Pendidikan Bahasa Inggris",
+  "Magister Manajemen",
+  "Magister Hukum"
+][i % 12],
+
+      year: 2023 + (i % 2),
+      type: "Official",
+      englishType: "IELTS",
+      structureScore: structure,
+      listeningScore: listening,
+      readingScore: reading,
+      totalScore: total,
+      passed: total >= 6.0
+    };
+  })
 ];
+
+
 
 const scoreOptions: Record<string, number[]> = {
   TOEFL: [400, 450, 500, 550, 600, 650, 700],
   TOEIC: [300, 400, 500, 600, 700, 800, 900],
   IELTS: [4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0],
 };
+function calculateIELTSBand(listening: number, reading: number, structure: number) {
+  // estimate speaking score because you don't have the 4th component
+  const speaking = (listening + reading + structure) / 3;
+
+  // compute IELTS band
+  const average = (listening + reading + structure + speaking) / 4;
+
+  return Math.round(average * 2) / 2; 
+}
 
 export default function Page() {
   const [program, setProgram] = useState<string>("All");
@@ -81,7 +190,7 @@ export default function Page() {
       (englishType === "All" || item.englishType === englishType) &&
       (testType === "All" || item.type === testType) &&
       // numeric comparison: works because IELTS scores are decimals and TOEFL/TOEIC are larger numbers
-      (minScore === 0 ? true : item.score >= minScore)
+      (minScore === 0 ? true : item.totalScore >= minScore)
     );
   }, [program, year, minScore, testType, englishType]);
 
@@ -115,10 +224,19 @@ export default function Page() {
               onChange={(e) => setProgram(e.target.value)}
               className="w-full p-2 border rounded-lg"
             >
-              <option value="All">All</option>
-              <option value="Informatics">Informatics</option>
-              <option value="Management">Management</option>
-              <option value="Economics">Economics</option>
+              <option value="All">Semua Program Studi</option>
+    <option value="Teknik Sipil">Teknik Sipil</option>
+    <option value="Arsitektur">Arsitektur</option>
+    <option value="Teknik Elektro">Teknik Elektro</option>
+    <option value="Sistem Informasi">Sistem Informasi</option>
+    <option value="Teknologi Informasi">Teknologi Informasi</option>
+    <option value="Manajemen">Manajemen</option>
+    <option value="Akuntansi">Akuntansi</option>
+    <option value="Pariwisata">Pariwisata</option>
+    <option value="Ilmu Hukum">Ilmu Hukum</option>
+    <option value="Pendidikan Bahasa Inggris">Pendidikan Bahasa Inggris</option>
+    <option value="Magister Manajemen">Magister Manajemen</option>
+    <option value="Magister Hukum">Magister Hukum</option>
             </select>
           </div>
 
@@ -217,102 +335,43 @@ export default function Page() {
   <div className="rounded-xl border bg-white shadow-sm p-4">
 
     <div className="max-h-[350px] overflow-y-auto">
-      <div className="overflow-x-auto max-w-full"> 
-        <table className="w-full table-fixed">
-
-          {/* Header */}
-          <thead>
-            <tr className="bg-gray-100 text-gray-600">
-              {["Name", "Score", "Program", "Year", "Type", "English", "Result"].map((h) => (
-                <th
-                  key={h}
-                  className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          {/* Body */}
-          <tbody className="divide-y divide-gray-100">
-            {filteredData.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={7}
-                  className="px-3 py-6 text-center text-gray-500 text-sm"
-                >
-                  No data found
-                </td>
-              </tr>
+      <div className="w-full overflow-x-auto">
+  <table className="min-w-full table-auto border-collapse">
+    <thead className="bg-gray-200">
+      <tr>
+        <th className="p-2 w-1/4 text-left">Name</th>
+        <th className="p-2 w-1/4 text-left">Type</th>
+        <th className="p-2 w-1/4 text-left">Test Type</th>
+        <th className="p-2 w-1/4 text-left">Structure Score</th>
+        <th className="p-2 w-1/4 text-left">Listening Score</th>
+        <th className="p-2 w-1/4 text-left">Reading Score</th>
+        <th className="p-2 w-1/4 text-left">Total Score</th>
+        <th className="p-2 w-1/4 text-left">Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {filteredData.map((row, idx) => (
+        <tr key={idx} className="border-b hover:bg-gray-50">
+          <td className="p-2">{row.name}</td>
+          <td className="p-2">{row.englishType}</td>
+          <td className="p-2">{row.type}</td>
+          <td className="p-2">{row.structureScore}</td>
+          <td className="p-2">{row.listeningScore}</td>
+          <td className="p-2">{row.readingScore}</td>
+          <td className="p-2">{row.totalScore}</td>
+          <td className="p-2 font-semibold">
+            {row.passed === true ? (
+              <span className="text-green-600">Passed</span>
             ) : (
-              filteredData.map((d, idx) => (
-                <tr
-                  key={idx}
-                  className="hover:bg-gray-50 transition-all"
-                >
-
-                  {/* Name */}
-                  <td className="px-3 py-2 text-sm font-medium text-gray-800 break-words">
-                    <div className="inline-flex items-center gap-2">
-                      <div className="h-7 w-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-semibold">
-                        {d.name.charAt(0)}
-                      </div>
-                      <span className="break-words max-w-[120px] block">
-                        {d.name}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Score */}
-                  <td className="px-3 py-2 text-sm text-gray-700">
-                    {d.score}
-                  </td>
-
-                  {/* Program */}
-                  <td className="px-3 py-2 text-sm text-gray-700 break-words">
-                    {d.program}
-                  </td>
-
-                  {/* Year */}
-                  <td className="px-3 py-2 text-sm text-gray-700">
-                    {d.year}
-                  </td>
-
-                  {/* Type */}
-                  <td className="px-3 py-2 text-sm text-gray-700">
-                    <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded-lg text-xs">
-                      {d.type}
-                    </span>
-                  </td>
-
-                  {/* English Type */}
-                  <td className="px-3 py-2 text-sm text-gray-700">
-                    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs">
-                      {d.englishType}
-                    </span>
-                  </td>
-
-                  {/* Result */}
-                  <td className="px-3 py-2 text-sm">
-                    <span
-                      className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                        d.passed
-                          ? "bg-green-100 text-green-700"
-                          : "bg-red-100 text-red-700"
-                      }`}
-                    >
-                      {d.passed ? "Passed" : "Failed"}
-                    </span>
-                  </td>
-
-                </tr>
-              ))
+              <span className="text-red-600">Failed</span>
             )}
-          </tbody>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
-        </table>
-      </div>
     </div>
 
   </div>
