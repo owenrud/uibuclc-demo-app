@@ -136,7 +136,7 @@ export default function Page() {
   return (
     <div className="p-6">
       <div className="bg-white rounded-xl shadow-md p-6">
-        <h2 className="text-2xl font-semibold mb-4">Pass / Not Pass Overview</h2>
+        <h2 className="text-2xl font-semibold mb-4">Mandarin Scores Analytics </h2>
 
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">

@@ -90,7 +90,7 @@ const [prodi, setProdi] = useState("Teknik Sipil");
         {/* ENGLISH SECTION */}
         <Card className="p-4 shadow-md">
           <CardContent>
-            <h2 className="text-xl font-bold text-center mb-4">English Test Analytics</h2>
+            <h2 className="text-xl font-bold text-center mb-4">English Test Summary Scores Analytics</h2>
 
             {/* FILTERS */}
             <div className="grid grid-cols-4 gap-3 mb-4">
@@ -160,7 +160,7 @@ const [prodi, setProdi] = useState("Teknik Sipil");
         {/* MANDARIN SECTION */}
         <Card className="p-4 shadow-md">
           <CardContent>
-            <h2 className="text-xl font-bold text-center mb-4">Mandarin Analytics</h2>
+            <h2 className="text-xl font-bold text-center mb-4">Mandarin Summary Scores Analytics</h2>
 
             {/* FILTERS */}
             <div className="grid grid-cols-2 gap-3 mb-4">
